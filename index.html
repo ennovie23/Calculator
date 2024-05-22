@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CALCULATOR</title>
+
+    <style>
+
+        body{
+        display: flex;
+        justify-content: center;
+        align-items: center;   
+        }
+
+        #container{
+            background-color: #303435;
+            width: 280px;
+            border-radius: 10px;
+            box-shadow: 0 5px 8px;
+            padding: 10px;
+            margin-top: 15%;
+            
+            padding-right: -50;
+            border: #92908c;
+        }
+
+        #historyInput {
+            width: 94%;
+            background-color: transparent;
+            height: 20px;
+            border-color:solid #ffffff;
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+            border-bottom: none;
+            text-align: right;
+            color: #ffffff;
+        }
+
+        #input{
+            width: 94%;
+            height: 50px;
+            margin-bottom: 8%;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            background-color: transparent;
+            border-color:solid #ffffff;
+            color: #ffffff;
+            text-align: right;
+            border-top: none;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 40px;
+        } 
+
+        
+
+        .gray{
+            background-color: #898987;
+            color: #ffffff;
+            padding: 10px;
+            width: 69px;;
+        }
+
+        
+
+        button{
+            font-family: sans-serif;
+            width: 50px;
+            height: 40px;
+            margin: 0;
+            padding: 0px;
+            border-radius: 10px;
+            margin-bottom: 2%;
+            border-color: rgb(197, 188, 188);
+            border: none;
+        }
+
+        #AC, #percent, #delete, #ans{
+            width: 36.5px;
+        }
+
+        #zero{
+            width: 142px;
+        }
+
+        .secondRow, .thirdRow, .fourthRow, .fifthRow{
+            width: fit-content;
+        }
+
+        .firstRow{
+            display: flex;
+            width: fit-content;
+            padding: 0;
+        }
+
+        .darkGray{
+            background-color: #4d4b4a;
+            color: rgb(255, 255, 255);
+            width: 30px;
+            margin-right: 2px;
+        }
+
+        .orange{
+            background-color:#ffa31c;
+            padding: 0;
+        }
+
+        #content{
+            padding-left: 5px ;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="content">
+            <input id="historyInput"  disabled>
+        <input id="input" disabled>
+
+        <div class="firstRow">
+            <button class="darkGray" id="AC">AC</button>
+            <button class="darkGray" id="percent">%</button>
+            <button class="darkGray" id="openP">(</button>
+            <button class="darkGray" id="closeP">)</button>
+            <button class="darkGray" id="delete">del</button>
+            <button class="darkGray" id="ans">ans</button>
+            <button class="orange" id="divide">/</button>
+        </div>
+
+        <div class="secondRow">
+            <button class="gray" id="seven">7</button>
+            <button class="gray" id="eight">8</button>
+            <button class="gray" id="nine">9</button>
+            <button class="orange" id="multiply">x</button>
+        </div>
+
+        <div class="thirdRow">
+            <button class="gray" id="four">4</button>
+            <button class="gray" id="five">5</button>
+            <button class="gray" id="six">6</button>
+            <button class="orange" id="minus">-</button>
+        </div>
+        
+        <div class="fourthRow">
+            <button class="gray" id="one">1</button>
+            <button class="gray" id="two">2</button>
+            <button class="gray" id="three">3</button>
+            <button class="orange" id="add">+</button>
+        </div>
+
+        <div class="fifthRow">
+            <button class="gray" id="zero">0</button>
+            <button class="gray" id="point">.</button>
+            <button class="orange" id="equal">=</button>
+        </div>
+
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById("input");
+        const historyInput = document.getElementById("historyInput");
+        let expression = "";
+        let result;
+        
+
+        function displayingInput(inputs) {
+            let lastInput = input.value.slice(-1);
+
+            if ((lastInput === "+" || lastInput === "x" || lastInput === "/") &&
+            (inputs === "+" || inputs === "x" || inputs === "/")) {
+                return;
+           } else if(lastInput === "-" && inputs === "-"){
+                input.value = input.value.slice(0, -1) + "+";
+                return;
+           }
+           input.value += inputs;
+        }
+
+
+        function evaluateExpression() {
+            if (input.value !== "" && historyInput.value === "") {
+                try {
+                    expression = input.value.replace(/x/g, '*');
+                    result = eval(expression);
+                    input.value = result;
+                    historyInput.value = expression;
+                } catch (error) {
+                    input.value = "error";
+                    historyInput.value = expression;
+                }
+            } else if (historyInput.value !== "") {
+                let operatorIndex = historyInput.value.search(/[+\-*/]/);
+                let operator = historyInput.value.charAt(operatorIndex);
+                let secondNumberString = historyInput.value.substring(operatorIndex + 1);
+                let secondNumber = parseFloat(secondNumberString); // Convert the second number string to a float
+    
+                switch (operator) {
+                    case '+':
+                        result += secondNumber;
+                        break;
+                    case '-':
+                        result -= secondNumber;
+                        break;
+                    case '*':
+                        result *= secondNumber;
+                        break;
+                    case '/':
+                        result /= secondNumber;
+                        break;
+                }
+                    input.value = result;
+                    historyInput.value = result + operator + secondNumber;
+            }  
+        }
+     
+        
+        document.querySelectorAll("button").forEach(button => {
+            button.addEventListener("click", function(){
+                if (this.id === "equal"){
+                    evaluateExpression();
+                } /* else if (this.id === "negativeSign"){
+                    displayingInput("-");
+                    expression = input.value.replace(/\+ |- /g, '-');
+                    result = eval(input.value);
+                    input.value = result;
+                    historyInput.value = expression;
+                }  */else if (this.id === "AC") {
+                    input.value = "";
+                    historyInput.value = "";
+                } else if (this.id === "percent") {
+                    let inputValue = parseFloat(input.value);
+                    result = inputValue / 100;
+                    input.value = result;
+                    historyInput.value = (inputValue + "%");
+                } else if (this.id === "ans") {
+                    historyInput.value = "";
+                } else if(this.id === "delete"){
+                    input.value = input.value.slice(0, -1); 
+                } else {
+                    if (historyInput.value !== "") {
+                        input.value = "";
+                        historyInput.value = "";
+                        let operatorIndex = historyInput.value.search(/[+\-*/]/);
+
+                    }
+                    displayingInput(this.textContent);
+                }
+            });
+        });
+
+
+    </script>
+</body>
+</html>
+
